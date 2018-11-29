@@ -141,7 +141,7 @@
           <div id="tableone" class="col-md-6">
             <center>
               <header>
-                <h2>League 111</h2>
+                <h2>Top Teams in League 111</h2>
               </header>
             </center>
             <table id="teams" class="table table-dark table-hover table-striped">
@@ -167,7 +167,7 @@
           <div id="tabletwo" class="col-md-6">
             <center>
               <header>
-                <h2>League 222</h2>
+                <h2>Top Teams in League 222</h2>
               </header>
             </center>
             <table id="teams" class="table table-dark table-hover table-striped">

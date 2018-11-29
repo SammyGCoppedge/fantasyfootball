@@ -141,6 +141,9 @@
       ?>
     </button>
   </form>
+  <button id="logout" type="button" class="btn btn-primary" data-toggle="modal" data-target="#infoModal">
+    Info
+  </button>
   <br>
   <div id="header" class="jumbotron text-center">
     <?php
@@ -260,14 +263,24 @@
           <header>
             <h2>Your Players</h2>
             <br>
-              <form id="playerform" action="query.php" method="post">
-                <div class="row">
-                  <div id="teamtext" class="col">
-                    <input type="text" class="form-control" name="playerquery">
+            <form id="playerform" action="query.php" method="post">
+              <div class="row">
+                <div id="radio" class="col">
+                  <div class="row">
+                    <div id="radio1" class="radio">
+                      <label><input type="radio" name="radioadd" checked value="add"> Add</label>
+                    </div>
+                    <div id="radio2" class="radio" value="delete">
+                      <label><input type="radio" name="radioadd" value="delete"> Delete</label>
+                    </div>
                   </div>
-                  <button id="teambutton" type="submit" class="btn btn-dark">Send Request</button>
                 </div>
-              </form>
+                <div id="teamtext" class="col">
+                  <input type="text" class="form-control" name="playerquery">
+                </div>
+                <button id="teambutton" type="submit" class="btn btn-dark">Send Request</button>
+              </div>
+            </form>
             <br>
           </header>
         </center>
@@ -321,12 +334,24 @@
           <header>
             <h2>Your Games</h2>
             <br>
-            <div class="row">
-              <div id="gametext" class="col">
-                <input type="text" class="form-control">
+            <form id="teamform" action="query.php" method="post">
+              <div class="row">
+                <div id="radio" class="col">
+                  <div class="row">
+                    <div id="radio1" class="radio">
+                      <label><input type="radio" name="radioadd" checked value="add"> Add</label>
+                    </div>
+                    <div id="radio2" class="radio" value="delete">
+                      <label><input type="radio" name="radioadd" value="delete"> Delete</label>
+                    </div>
+                  </div>
+                </div>
+                <div id="teamtext" class="col">
+                  <input type="text" class="form-control" name="gamequery">
+                </div>
+                <button id="teambutton" type="submit" class="btn btn-dark">Send Request</button>
               </div>
-              <button id="gamebutton" type="submit" class="btn btn-dark">Send Request</button>
-            </div>
+            </form>
             <br>
           </header>
         </center>
@@ -380,12 +405,24 @@
           <header>
             <h2>Your Plays</h2>
             <br>
-            <div class="row">
-              <div id="playtext" class="col">
-                <input type="text" class="form-control">
+            <form id="teamform" action="query.php" method="post">
+              <div class="row">
+                <div id="radio" class="col">
+                  <div class="row">
+                    <div id="radio1" class="radio">
+                      <label><input type="radio" name="radioadd" checked value="add"> Add</label>
+                    </div>
+                    <div id="radio2" class="radio" value="delete">
+                      <label><input type="radio" name="radioadd" value="delete"> Delete</label>
+                    </div>
+                  </div>
+                </div>
+                <div id="teamtext" class="col">
+                  <input type="text" class="form-control" name="playquery">
+                </div>
+                <button id="teambutton" type="submit" class="btn btn-dark">Send Request</button>
               </div>
-              <button id="playbutton" type="submit" class="btn btn-dark">Send Request</button>
-            </div>
+            </form>
             <br>
           </header>
         </center>
@@ -394,12 +431,13 @@
             <thead class="thead-dark">
               <tr>
                 <th scope="col">#</th>
+                <th scope="col">Play No.</th>
                 <th scope="col">Player</th>
+                <th scope="col">Game No.</th>
                 <th scope="col">Game Date</th>
                 <th scope="col">Team</th>
                 <th scope="col">Type</th>
                 <th scope="col">Points</th>
-                <th scope="col">League</th>
               <tr>
             </thead>
             <?php
@@ -407,13 +445,13 @@
             {
               $sql = "CREATE OR REPLACE VIEW lmplay AS SELECT * FROM play NATURAL JOIN player NATURAL JOIN game NATURAL JOIN team NATURAL JOIN (SELECT * FROM league WHERE leagueManager = '$username') AS t";
               $result = $conn-> query($sql);
-              $sql = "SELECT * FROM lmplay";
+              $sql = "SELECT * FROM lmplay ORDER BY playID";
               $result = $conn-> query($sql);
 
               $i = 1;
               while ($row = $result->fetch_assoc())
               {
-                  echo "<tr><td>"  . $i . "</td><td>" . $row["playerName"] . "</td><td>" . $row["gameDate"] . "</td><td>" . $row["teamName"] . "</td><td>" . $row["playType"] . "</td><td>" . $row["pointsWorth"] . "</td><td>" . $row["leagueID"] . "</td></tr>";
+                  echo "<tr><td>"  . $i . "</td><td>" . $row["playID"] . "</td><td>". $row["playerName"] . "</td><td>" . $row["gameID"] . "</td><td>" . $row["gameDate"] . "</td><td>" . $row["teamName"] . "</td><td>" . $row["playType"] . "</td><td>" . $row["pointsWorth"] . "</td></tr>";
                   $i = $i + 1;
               }
             }
@@ -421,13 +459,13 @@
             {
               $sql = "CREATE OR REPLACE VIEW tmplay AS SELECT * FROM play NATURAL JOIN game NATURAL JOIN team NATURAL JOIN player WHERE teamManager = '$username'";
               $result = $conn-> query($sql);
-              $sql = "SELECT * FROM tmplay";
+              $sql = "SELECT * FROM tmplay ORDER BY playID";
               $result = $conn-> query($sql);
 
               $i = 1;
               while ($row = $result->fetch_assoc())
               {
-                  echo "<tr><td>"  . $i . "</td><td>" . $row["playerName"] . "</td><td>" . $row["gameDate"] . "</td><td>" . $row["teamName"] . "</td><td>" . $row["playType"] . "</td><td>" . $row["pointsWorth"] . "</td><td>" . $row["leagueID"] . "</td></tr>";
+                  echo "<tr><td>"  . $i . "</td><td>" . $row["playID"] . "</td><td>" . $row["playerName"] . "</td><td>" . $row["gameID"] . "</td><td>" . $row["gameDate"] . "</td><td>" . $row["teamName"] . "</td><td>" . $row["playType"] . "</td><td>" . $row["pointsWorth"] . "</td></tr>";
                   $i = $i + 1;
               }
             }
@@ -463,6 +501,61 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="infoModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h4 class="modal-title">Request Info</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <b>Team Requests</b><br><br>
+
+          To add:<br>
+          <b>League Managers:</b> "Team Name" "Manager Name" Points Wins<br>
+          <b>Team Managers:</b> "Team Name" Points Wins League<br><br>
+
+          To delete:
+          <br>
+          <b>All Managers:</b> "Team Name"
+
+          <hr>
+          <b>Player Requests</b><br><br>
+
+          To add:<br>
+          <b>League Managers:</b> "Team Name" "YYYY-MM-DD" "Team Name" "Position" Points<br>
+          <b>Team Managers:</b> "Team Name" "YYYY-MM-DD" "Team Name" "Position" Points League<br><br>
+
+          To delete:<br>
+          <b>All Managers:</b> "Player Name"<br>
+          <hr>
+          <b>Game Requests</b><br><br>
+
+          To add:<br>
+          <b>League Managers:</b> "YYYY-MM-DD" "Winning Team Name" "Losing Team Name" Points<br>
+          <b>Team Managers:</b> "YYYY-MM-DD" "Winning Team Name" "Losing Team Name" Points League<br><br>
+
+          To delete:<br>
+          <b>All Managers:</b> Game No.<br>
+          <hr>
+          <b>Play Requests</b><br><br>
+          To add:<br>
+          <b>All Managers:</b> "Player Name" GameID "Type" Points<br><br>
+
+          To delete:<br>
+          <b>All Managers:</b> Play No.
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+
       </div>
     </div>
   </div>

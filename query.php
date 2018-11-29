@@ -55,65 +55,139 @@
   function sendQuery($command, $query, $flag, $username, $usertype)
   {
     include 'connection.php';
-    if ($usertype = "League Manager")
+
+    if ($usertype == "League Manager")
     {
-      switch ($flag)
+      $result = $conn-> query("SELECT leagueID FROM league WHERE leagueManager = '$username'");
+      $result = $result->fetch_assoc();
+      $leagueID = $result['leagueID'];
+    }
+
+    $query = parse($query);
+
+    switch ($flag)
+    {
+      case "teamquery":
+
+        if($usertype == "League Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ", $leagueID)";
+            echo "INSERT INTO team VALUES " . $query;
+            $result = $conn-> query("INSERT INTO team VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM team WHERE teamName = $query AND leagueID = $leagueID");
+          }
+        }
+        if($usertype == "Team Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ", '$username')";
+            $result = $conn-> query("INSERT INTO team (teamName, teamPoints, teamWins, leagueID, teamManager) VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM team WHERE teamName = $query AND teamManager = '$username'");
+          }
+        }
+      case "playerquery":
+
+        if($usertype == "League Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ", $leagueID, false)";
+            $result = $conn-> query("INSERT INTO player (playerName, dateOfBirth, teamName, position, playerPoints, leagueID, freeAgentStatus) VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM player WHERE playerName = $query AND leagueID = $leagueID");
+          }
+        }
+
+        if ($usertype == "Team Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ", false)";
+            echo $query;
+            $result = $conn-> query("INSERT INTO player VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM player WHERE playerName = $query");
+          }
+        }
+      case "gamequery":
+
+        if($usertype == "League Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ", $leagueID)";
+            $result = $conn-> query("INSERT INTO game (gameDate, winningTeam, losingTeam, leagueID) VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM game WHERE gameID = $query AND leagueID = $leagueID");
+          }
+        }
+
+        if ($usertype == "Team Manager")
+        {
+          if ($command == "add")
+          {
+            $query = "(" . $query . ")";
+            $result = $conn-> query("INSERT INTO game (gameDate, winningTeam, losingTeam, leagueID) VALUES " . $query);
+          }
+          if ($command == "delete")
+          {
+            $result = $conn-> query("DELETE FROM game WHERE gameID = $query");
+          }
+        }
+      case "playquery":
+      if($usertype == "League Manager")
       {
-        case "teamquery":
-          if($usertype = "League Manager")
-          {
-            $query = parse($query, $flag);
-            $result = $conn-> query("SELECT leagueID FROM league WHERE leagueManager = '$username'");
-            $result = $result->fetch_assoc();
-            $leagueID = $result['leagueID'];
+        if ($command == "add")
+        {
+          $query = "(" . $query . ")";
+          $result = $conn-> query("INSERT INTO play (playerName, gameID, playType, pointsWorth) VALUES " . $query);
+        }
+        if ($command == "delete")
+        {
+          $result = $conn-> query("DELETE FROM play WHERE playID = $query");
+        }
+      }
 
-            if ($command == "add")
-            {
-              $query = "(" . $query . ", $leagueID)";
-              $result = $conn-> query("INSERT INTO team VALUES " . $query);
-            }
-            if ($command == "delete")
-            {
-              $result = $conn-> query("DELETE FROM team WHERE teamName = $query AND leagueID = $leagueID");
-            }
-          }
-          else
-          {
-
-          }
-        case "playerquery":
-
-        case "gamequery":
-
-        case "playquery":
-
+      if ($usertype == "Team Manager")
+      {
+        if ($command == "add")
+        {
+          $query = "(" . $query . ")";
+          $result = $conn-> query("INSERT INTO play (playerName, gameID, playType, pointsWorth) VALUES " . $query);
+        }
+        if ($command == "delete")
+        {
+          $result = $conn-> query("DELETE FROM play WHERE playID = $query");
+        }
       }
     }
-    else
-    {
-      echo "wow";
-    }
+    echo mysqli_error($conn);
   }
-  function parse($query, $flag)
+  function parse($query)
   {
-      switch ($flag)
-      {
-        case "teamquery":
-          preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $query, $qarray);
-          $qstring = "";
-          foreach ($qarray[0] as &$values)
-          {
-            $qstring .= $values . ", ";
-          }
-          $qstring = substr_replace($qstring, "", -1);
-          $qstring = substr($qstring, 0, -1);
-          return $qstring;
-
-        case "playerquery":
-
-        case "gamequery":
-
-        case "playquery":
-      }
+    preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $query, $qarray);
+    $qstring = "";
+    foreach ($qarray[0] as &$values)
+    {
+      $qstring .= $values . ", ";
+    }
+    $qstring = substr_replace($qstring, "", -1);
+    $qstring = substr($qstring, 0, -1);
+    return $qstring;
   }
 ?>

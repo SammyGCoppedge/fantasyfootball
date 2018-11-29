@@ -1,0 +1,22 @@
+# app.yaml
+runtime: php55
+
+handlers:
+- url: /
+	script: index.php
+
+- url: /index\.php
+	script: index.php 
+	
+- url: /connection\.php
+	script: connection.php
+	
+- url: /transit\.php
+	script: transit.php
+	
+- url: /userpage\.php
+	script: userpage.php
+	
+- url: /query\.php
+	script: userpage.php
+	
