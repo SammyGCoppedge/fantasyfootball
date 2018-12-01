@@ -1,3 +1,8 @@
+CREATE DATABASE footballdb;
+CREATE DATABASE users;
+
+USE footballdb;
+
 CREATE TABLE league (
 	leagueID tinyint(255) unsigned NOT NULL PRIMARY KEY,
 	leagueManager varchar(32) NOT NULL,
@@ -17,23 +22,23 @@ CREATE TABLE team (
 	PRIMARY KEY (teamName, leagueID));
 	
 INSERT INTO team VALUES
-	('Stags', 'Kable Deere', 232.5, 0, 111),
-	('Panda Power', 'Sauer Schmidt', 245.2, 0, 111),
-	('Chiefs', 'Robert Reg', 343.0, 0, 222),
-	('A Kids', 'Thom Yorke', 403.6, 0, 222),
-	('Brown Cats', 'B. Rownathan', 392.4, 0, 111),
-	('Northern Aurora', 'Bjork', 275.64, 0, 222),
-	('Lucky Sevens', 'George Costanza', 777.77, 0, 222),
-	('Animals', 'Noah Lennox', 327.4, 0, 222),
-	('Thundercats', 'Eric Andre', 311, 0, 222),
-	('GEPs', 'J.C. Denton', 354.32, 0, 222),
-	('Busy Bees', 'Robin B.', 399.99, 0, 111),
-	('Polar Bears', 'Paige Madison', 497.32, 0, 222),
-	('Fire House', 'David Byrne', 501.23, 0, 111),
-	('Closers', 'Trent Reznor', 554.04, 0, 222),
-	('Ecco Dolphins', 'Chuck Person', 422.24, 0, 222),
-	('Runaways', 'CRJ', 413.4, 0, 111),
-	('D DOGS', 'Jack Iriquois', 684.2, 0, 111),
+	('Stags', 'Kable Deere', 232.5, 1, 111),
+	('Panda Power', 'Sauer Schmidt', 245.2, 2, 111),
+	('Chiefs', 'Robert Reg', 343.0, 1, 222),
+	('A Kids', 'Thom Yorke', 403.6, 1, 222),
+	('Brown Cats', 'B. Rownathan', 392.4, 2, 111),
+	('Northern Aurora', 'Bjork', 275.64, 2, 222),
+	('Lucky Sevens', 'George Costanza', 777.77, 3, 222),
+	('Animals', 'Noah Lennox', 327.4, 2, 222),
+	('Thundercats', 'Eric Andre', 311, 1, 222),
+	('GEPs', 'J.C. Denton', 354.32, 1, 222),
+	('Busy Bees', 'Robin B.', 399.99, 1, 111),
+	('Polar Bears', 'Paige Madison', 497.32, 2, 222),
+	('Fire House', 'David Byrne', 501.23, 2, 111),
+	('Closers', 'Trent Reznor', 554.04, 3, 222),
+	('Ecco Dolphins', 'Chuck Person', 422.24, 2, 222),
+	('Runaways', 'CRJ', 413.4, 2, 111),
+	('D DOGS', 'Jack Iriquois', 684.2, 2, 111),
 	('Patriots', 'Hideo Kojima', 432.85, 0, 111),
 	('Football Fanatics', 'Isabella', 349, 0, 222);
 	
@@ -145,8 +150,17 @@ DELIMITER ;
 
 You do not have the SUPER privilege and binary logging is enabled (you *might* want 
 to use the less safe log_bin_trust_function_creators variable)
+
+DELIMITER $$
+CREATE TRIGGER updateWin AFTER UPDATE ON game FOR EACH ROW BEGIN UPDATE team SET teamWins = teamWins - 1 WHERE teamName = new.losingTeam; UPDATE team SET teamWins = teamWins + 1 WHERE teamName = new.winningTeam END;$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER removeWin AFTER DELETE ON game FOR EACH ROW BEGIN UPDATE team SET teamWins = teamWins - 1 WHERE teamName = old.winningTeam; END;$$
+DELIMITER ;
+
 */
-	
+
  INSERT INTO game
 	(gameDate, winningTeam, losingTeam, leagueID) VALUES 
 	('2018-09-23', 'Lucky Sevens', 'Ecco Dolphins', 222),
@@ -323,25 +337,33 @@ INSERT INTO play
 	(30, 'Joe Mixon', 'Touchdown', 14.98);
 
 	
+USE users;
+
+CREATE TABLE users (
+	username varchar(32) NOT NULL PRIMARY KEY,
+	password varchar(32) NOT NULL,
+	authority enum('Team Manager', 'League Manager'));
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+INSERT INTO users VALUES 
+	('Danny DeVito', 'football', 'League Manager'),
+	('Harrison Ford', 'football', 'League Manager'),
+	('Kable Deere', 'football', 'Team Manager'),
+	('Sauer Schmidt', 'football', 'Team Manager'),
+	('Robert Reg', 'football', 'Team Manager'),
+	('Thom Yorke', 'football', 'Team Manager'),
+	('B. Rownathan', 'football', 'Team Manager'),
+	('Bjork', 'football', 'Team Manager'),
+	('George Costanza', 'football', 'Team Manager'),
+	('Noah Lennox', 'football', 'Team Manager'),
+	('Eric Andre', 'football', 'Team Manager'),
+	('J.C. Denton', 'football', 'Team Manager'),
+	('Robin B.', 'football', 'Team Manager'),
+	('Paige Madison', 'football', 'Team Manager'),
+	('David Byrne', 'football', 'Team Manager'),
+	('Trent Reznor', 'football', 'Team Manager'),
+	('Chuck Person', 'football', 'Team Manager'),
+	('CRJ', 'football', 'Team Manager'),
+	('Jack Iriquois', 'football', 'Team Manager'),
+	('Hideo Kojima', 'football', 'Team Manager'),
+	('Isabella', 'football', 'Team Manager');
